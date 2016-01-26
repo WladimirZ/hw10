@@ -10,7 +10,7 @@ void writeToFile(const double* const u, const string s, const double dx,
                  const double xmin, const int N, const double t);
 void initialize(double* const u0, const double dx,const double dt, const double xmin,
                 const int N);
-void step(double* const u1,  double* const u0,  const double dt,
+void step(double* const u1, const double* const u0,  const double dt,
           const double dx, const double D,const int N);
 
 //---------------------------------------
@@ -44,7 +44,11 @@ int main(){
   for(int i=1; i<=Na; i++)
   {
    for(int j=0; j<Nk; j++){
-
+     
+     step(u1, u0, dt, dx, D, N);
+     h = u1;
+     u1 = u0;
+     u0 = h;
 
    }
    strm.str("");
@@ -59,11 +63,13 @@ int main(){
   return 0;
 }
 //-----------------------------------------------
-void step(double* const f1, double* const f0,
+void step(double* const f1, const double* const f0,
           const double dt, const double dx,
           const double D, const int N)
 {
-
+    f1[0] = f0[0] + ( D * dt / dx / dx) * ( f0[1] - 2 * f0[0] );
+    for (int i=1; i<N-1; i++) f1[i] = f0[i] + ( D * dt / dx / dx) * ( f0[i+1] - 2 * f0[i] + f0[i-1] );
+    f1[N-1] = f0[N-1] + ( D * dt / dx / dx) * (  2 * f0[N-1] + f0[N-2] );
 }
 //-----------------------------------------------
 void initialize(double* const u0, const double dx,
